@@ -18,58 +18,30 @@ impl<'a> Value<'a> {
   }
 
   pub fn from_boolean(value: bool) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.z() = if value { 1 } else { 0 } };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { z: if value { 1 } else { 0 } });
   }
-  
+
   pub fn from_i8(value: i8) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.b() = value };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { b: value });
   }
-  
+
   pub fn from_i16(value: i16) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.s() = value };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { s: value });
   }
-  
+
   pub fn from_i32(value: i32) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.i() = value };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { i: value });
   }
-  
+
   pub fn from_i64(value: i64) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.j() = value };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { j: value });
   }
-  
+
   pub fn from_object(value: &::Object) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.l() = value.as_handle() };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { l: value.as_handle() });
   }
-  
+
   pub fn from_string(value: &::String) -> Value<'a> {
-    let mut handle = jvalue::default();
-
-    unsafe { *handle.l() = value.as_handle() };
-
-    return Value::from_handle(handle);
+    return Value::from_handle(jvalue { l: value.as_handle() });
   }
 }

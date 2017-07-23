@@ -54,17 +54,19 @@ impl JVM {
     let cstrings: Vec<CString> = options.iter().map(|x| CString::new(*x).unwrap()).collect();
 
     let mut jvm_options: Vec<JavaVMOption> = cstrings.iter().map(|x| {
-      let mut jvm_option = JavaVMOption::default();
-      jvm_option.optionString = x.as_ptr() as *mut i8;
-      jvm_option
+      JavaVMOption {
+        optionString: x.as_ptr() as *mut i8,
+        extraInfo: ptr::null_mut()
+      }
     }).collect();
 
 
-    let mut jvm_arguments = JavaVMInitArgs::default();
-    jvm_arguments.version = JNI_VERSION_1_8;
-    jvm_arguments.options = jvm_options.as_mut_ptr();
-    jvm_arguments.nOptions = jvm_options.len() as i32;
-    jvm_arguments.ignoreUnrecognized = JNI_FALSE;
+    let mut jvm_arguments = JavaVMInitArgs {
+      version: JNI_VERSION_1_8,
+      options: jvm_options.as_mut_ptr(),
+      nOptions: jvm_options.len() as i32,
+      ignoreUnrecognized: JNI_FALSE
+    };
 
     let mut jvm: *mut JavaVM = ptr::null_mut();
     let mut env: *mut JNIEnv = ptr::null_mut();

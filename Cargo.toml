@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["Aurora <aurora@aventine.se>"]
 
 [dependencies]
-jni-sys = "0.2.5"
+jni-sys = "0.3.0"
