@@ -17,6 +17,10 @@ impl<'a> Value<'a> {
     return self.handle;
   }
 
+  pub fn from_nil() -> Value<'a> {
+    return Value::from_handle(jvalue { l: std::ptr::null_mut() });
+  }
+
   pub fn from_boolean(value: bool) -> Value<'a> {
     return Value::from_handle(jvalue { z: if value { 1 } else { 0 } });
   }
@@ -35,6 +39,14 @@ impl<'a> Value<'a> {
 
   pub fn from_i64(value: i64) -> Value<'a> {
     return Value::from_handle(jvalue { j: value });
+  }
+
+  pub fn from_f32(value: f32) -> Value<'a> {
+    return Value::from_handle(jvalue { f: value });
+  }
+
+  pub fn from_f64(value: f64) -> Value<'a> {
+    return Value::from_handle(jvalue { d: value });
   }
 
   pub fn from_object(value: &::Object) -> Value<'a> {

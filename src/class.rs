@@ -16,6 +16,19 @@ impl Class {
     return environment.find_class(name);
   }
 
+  pub fn get_superclass(&self) -> Option<Class> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+    
+    let handle = unsafe { (**env).GetSuperclass.unwrap()(env, self.0) };
+    
+    if handle.is_null() {
+      return None;
+    } else {
+      return Some(Class::from_handle(&environment, handle));
+    }
+  }
+
   pub fn get_method(&self, name: &str, signature: &str) -> Result<::Method, ::Object> {
     let environment = ::get_env();
     let env = environment.as_handle();
@@ -43,6 +56,118 @@ impl Class {
     match environment.check_jvm_exception() {
       Some(e) => return Err(e),
       None => return Ok(::Method::from_handle(handle))
+    }
+  }
+
+  pub unsafe fn call_void_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<(), ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    (**env).CallStaticVoidMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(())
+    }
+  }
+
+  pub unsafe fn call_boolean_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<bool, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticBooleanMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result != 0)
+    }
+  }
+
+  pub unsafe fn call_byte_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i8, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticByteMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_short_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i16, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticShortMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_int_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i32, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticIntMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_long_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i64, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticLongMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_float_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<f32, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticFloatMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_double_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<f64, ::Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallStaticDoubleMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
     }
   }
 

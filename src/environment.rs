@@ -26,6 +26,16 @@ impl Environment {
     return global;
   }
 
+  pub(crate) fn retain_unowned(&self, handle: jobject) -> jobject {
+    if handle.is_null() { panic!("Handle was null, could not retain") };
+
+    let global = unsafe { (**self.0).NewGlobalRef.unwrap()(self.0, handle) };
+
+    if global.is_null() { panic!("Retaining failed") };
+
+    return global;
+  }
+
   pub fn ensure_local_capacity(&self, capacity: i32) -> Result<(), ::Object> {
     let result = unsafe { (**self.0).EnsureLocalCapacity.unwrap()(self.0, capacity) };
 
@@ -54,6 +64,7 @@ impl Environment {
     let exception = unsafe { (**self.0).ExceptionOccurred.unwrap()(self.0) };
 
     if !exception.is_null() {
+      unsafe { (**self.0).ExceptionDescribe.unwrap()(self.0) };
       unsafe { (**self.0).ExceptionClear.unwrap()(self.0) };
 
       return Some(::Object::from_handle(self, exception));

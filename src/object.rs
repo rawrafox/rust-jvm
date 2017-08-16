@@ -8,6 +8,10 @@ impl Object {
     return Object(environment.retain(handle));
   }
 
+  pub(crate) fn from_unowned_handle(environment: &::Environment, handle: jobject) -> Object {
+    return Object(environment.retain_unowned(handle));
+  }
+
   pub(crate) fn as_handle(&self) -> jobject {
     return self.0;
   }
@@ -58,6 +62,34 @@ impl Object {
     }
   }
 
+  pub unsafe fn call_byte_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i8, Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallByteMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_short_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i16, Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallShortMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
   pub unsafe fn call_int_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i32, Object> {
     let environment = ::get_env();
     let env = environment.as_handle();
@@ -65,6 +97,48 @@ impl Object {
     let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
 
     let result = (**env).CallIntMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_long_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<i64, Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallLongMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_float_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<f32, Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallFloatMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
+
+    match environment.check_jvm_exception() {
+      Some(e) => return Err(e),
+      None => return Ok(result)
+    }
+  }
+
+  pub unsafe fn call_double_method(&self, method: &::Method, arguments: &[&::Value]) -> Result<f64, Object> {
+    let environment = ::get_env();
+    let env = environment.as_handle();
+
+    let args : Vec<jvalue> = arguments.iter().map(|x| { x.as_handle() }).collect();
+
+    let result = (**env).CallDoubleMethodA.unwrap()(env, self.0, method.as_handle(), args.as_ptr());
 
     match environment.check_jvm_exception() {
       Some(e) => return Err(e),
@@ -92,6 +166,12 @@ impl Object {
 }
 
 unsafe impl Send for Object {}
+
+impl Clone for Object {
+  fn clone(&self) -> Object {
+    return Object::from_unowned_handle(&::get_env(), self.0);
+  }
+}
 
 impl Drop for Object {
   fn drop(&mut self) {
